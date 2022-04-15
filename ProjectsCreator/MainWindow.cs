@@ -17,10 +17,10 @@ namespace ProjectsCreator
         [UI] private readonly HSeparator _separator = new ();
         [UI] private readonly Paned _paned = new (Orientation.Horizontal);
 
-        private Gdk.Color _green = new Color(61, 116, 58);
-        private Gdk.Color _lightGray = new Color(61, 116, 58);
-        private Gdk.Color _darkGray = new Color(61, 116, 58);
-        private Gdk.Color _gray = new Color(61, 116, 58);
+        private readonly Color _greenColor = new (61, 116, 58);
+        private readonly Color _lightGrayColor = new (61, 116, 58);
+        private readonly Color _darkGrayColor = new (61, 116, 58);
+        private readonly Color _grayColor = new (61, 116, 58);
 
         public MainWindow() : base(Config.MainWindowTitle)
         {
@@ -35,14 +35,12 @@ namespace ProjectsCreator
             _mainVbox.PackEnd(_statusBar, false, false, 0);
             _mainVbox.PackEnd(_separator, false, false, 0);
             
+            _mainVbox.Name = "green-widget";
+            _mainVbox.ModifyFg(StateType.Normal, _lightGrayColor);
+            
             Add(_mainVbox);
             AddEventHandlers();
-            
-            AddCss("Styles/style.css");
-
-            _mainVbox.Name = "green-widget";
-            _mainVbox.ModifyFg(StateType.Normal, _lightGray);
-            
+            LoadStyles();
             ShowAll();
 
             _statusBar.Push(0, "Готов.");
@@ -154,16 +152,12 @@ namespace ProjectsCreator
             }
         }
 
-        private void AddCss(string pathToCss)
+        private static void LoadStyles()
         {
-            CssProvider css = new CssProvider();
+            var cssProvider = new CssProvider();
             
-            Gtk.StyleContext.AddProviderForScreen(Gdk.Screen.Default, css, Gtk.StyleProviderPriority.User);
-            
-            string cssStyles = "";
-            
-            cssStyles = File.ReadAllText(pathToCss);
-            css.LoadFromData(cssStyles);
+            StyleContext.AddProviderForScreen(Screen.Default, cssProvider, StyleProviderPriority.User);
+            cssProvider.LoadFromData(File.ReadAllText($"{Config.PathToStylesDirectory}/main.css"));
         }
     }
 }

@@ -3,6 +3,7 @@
     public static class Config
     {
         public const string MainWindowTitle = "Projects Creator";
+        public const string PathToStylesDirectory = "Styles";
         public const int MainWindowWidth = 800;
         public const int MainWindowHeight = 500;
         public const int MainVboxSpacing = 0;
