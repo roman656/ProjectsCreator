@@ -1,6 +1,7 @@
 using System;
 using Gdk;
 using Gtk;
+using ProjectsCreator.Table;
 using Application = Gtk.Application;
 using UI = Gtk.Builder.ObjectAttribute;
 using Window = Gtk.Window;
@@ -13,22 +14,26 @@ namespace ProjectsCreator
         [UI] private readonly Statusbar _statusBar = new ();
         [UI] private readonly MenuBar _menuBar = new ();
         [UI] private readonly HSeparator _separator = new ();
+        [UI] private readonly Paned _paned = new (Orientation.Horizontal);
 
         public MainWindow() : base(Config.MainWindowTitle)
         {
-            WindowPosition = WindowPosition.CenterAlways;
+            WindowPosition = WindowPosition.Center;
             DefaultSize = new Size(Config.MainWindowWidth, Config.MainWindowHeight);
 
             FillMenuBar();
+            FillPaned();
+            
             _mainVbox.PackStart(_menuBar, false, false, 0);
+            _mainVbox.PackStart(_paned, true, true, 0);
             _mainVbox.PackEnd(_statusBar, false, false, 0);
             _mainVbox.PackEnd(_separator, false, false, 0);
-
+            
             Add(_mainVbox);
             AddEventHandlers();
             ShowAll();
 
-            _statusBar.Push(0, "Инициализация завершена.");
+            _statusBar.Push(0, "Готов.");
         }
 
         private void AddEventHandlers()
@@ -37,7 +42,7 @@ namespace ProjectsCreator
         }
 
         private static void WindowDeleteEvent(object sender, DeleteEventArgs a) => Application.Quit();
-        
+
         private void OnOpenMenuItemClick(object sender, EventArgs a)
         {
             var chooseFolderDialog = new FileChooserDialog("Выбор файла", this, FileChooserAction.Open, "Выбрать",
@@ -71,6 +76,68 @@ namespace ProjectsCreator
             fileMenuItem.Submenu = fileMenu;
             
             _menuBar.Append(fileMenuItem);
+        }
+
+        private static TreeStore GetLeftTableModel()
+        {
+            var leftTableModel = new TreeStore(typeof(string), typeof(string));
+
+            var root = leftTableModel.AppendValues("Изделие", "ABC.000000.000");
+
+            var item1 = leftTableModel.AppendValues(root, "Сборка 1", "ABC.000000.001");
+            var item2 = leftTableModel.AppendValues(root, "Сборка 2", "ABC.000000.002");
+            var item3 = leftTableModel.AppendValues(root, "Сборка 3", "ABC.000000.003");
+            var item4 = leftTableModel.AppendValues(root, "Сборка 4", "ABC.000000.004");
+    
+            leftTableModel.AppendValues(item1, "Деталь 1-1", "ABC.000100.001");
+            leftTableModel.AppendValues(item1, "Деталь 1-2", "ABC.000100.002");
+            leftTableModel.AppendValues(item1, "Деталь 1-3", "ABC.000100.003");
+            leftTableModel.AppendValues(item1, "Деталь 1-4", "ABC.000100.004");
+
+            leftTableModel.AppendValues(item2, "Деталь 2-1", "ABC.000200.001");
+            leftTableModel.AppendValues(item2, "Деталь 2-2", "ABC.000200.002");
+            leftTableModel.AppendValues(item2, "Деталь 2-3", "ABC.000200.003");
+
+            leftTableModel.AppendValues(item3, "Деталь 3-1", "ABC.000300.001");
+
+            leftTableModel.AppendValues(item4, "Деталь 4-1", "ABC.000400.001");
+            leftTableModel.AppendValues(item4, "Деталь 4-2", "ABC.000400.002");
+
+            return leftTableModel;
+        }
+
+        private void FillPaned()
+        {
+            var leftScrolledWindow = new ScrolledWindow();
+            var leftTable = new TreeView(GetLeftTableModel());
+            AddTableColumns(leftTable, new [] { "Наименование", "Обозначение" });
+            leftScrolledWindow.WidthRequest = Config.LeftTableWidth;
+            leftScrolledWindow.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            leftScrolledWindow.Add(leftTable);
+
+            var rightScrolledWindow = new ScrolledWindow();
+            var rightTable = new TableDataManager().TreeView;
+            AddTableColumns(rightTable, new [] { "Имя", "Код", "Количество" });
+            rightScrolledWindow.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
+            rightScrolledWindow.Add(rightTable);
+            
+            _paned.Add1(leftScrolledWindow);
+            _paned.Add2(rightScrolledWindow);
+        }
+        
+        private static void AddTableColumns(in TreeView treeView, in string[] columnNames)
+        {
+            var i = 0;
+            
+            foreach (var columnName in columnNames)
+            {
+                var cellRendererText = new CellRendererText();
+                var column = new TreeViewColumn(columnName, cellRendererText, "text", i);
+                column.Resizable = true;
+                column.SortColumnId = i++;
+                column.MinWidth = Config.MinColumnWidth;
+                treeView.AppendColumn(column);
+            }
         }
     }
 }
