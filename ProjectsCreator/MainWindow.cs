@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Gdk;
 using Gtk;
 using ProjectsCreator.Table;
@@ -16,6 +17,11 @@ namespace ProjectsCreator
         [UI] private readonly HSeparator _separator = new ();
         [UI] private readonly Paned _paned = new (Orientation.Horizontal);
 
+        private Gdk.Color _green = new Color(61, 116, 58);
+        private Gdk.Color _lightGray = new Color(61, 116, 58);
+        private Gdk.Color _darkGray = new Color(61, 116, 58);
+        private Gdk.Color _gray = new Color(61, 116, 58);
+
         public MainWindow() : base(Config.MainWindowTitle)
         {
             WindowPosition = WindowPosition.Center;
@@ -31,6 +37,12 @@ namespace ProjectsCreator
             
             Add(_mainVbox);
             AddEventHandlers();
+            
+            AddCss("Styles/style.css");
+
+            _mainVbox.Name = "green-widget";
+            _mainVbox.ModifyFg(StateType.Normal, _lightGray);
+            
             ShowAll();
 
             _statusBar.Push(0, "Готов.");
@@ -66,7 +78,7 @@ namespace ProjectsCreator
             var openMenuItem = new MenuItem("Открыть");
             var saveMenuItem = new MenuItem("Сохранить");
             var saveAsMenuItem = new MenuItem("Сохранить как");
-
+            
             openMenuItem.Activated += OnOpenMenuItemClick;
             
             fileMenu.Append(createMenuItem);
@@ -115,6 +127,8 @@ namespace ProjectsCreator
             leftScrolledWindow.SetPolicy(PolicyType.Automatic, PolicyType.Automatic);
             leftScrolledWindow.Add(leftTable);
 
+            leftTable.Name = "tree-view";
+            
             var rightScrolledWindow = new ScrolledWindow();
             var rightTable = new TableDataManager().TreeView;
             AddTableColumns(rightTable, new [] { "Имя", "Код", "Количество" });
@@ -138,6 +152,18 @@ namespace ProjectsCreator
                 column.MinWidth = Config.MinColumnWidth;
                 treeView.AppendColumn(column);
             }
+        }
+
+        private void AddCss(string pathToCss)
+        {
+            CssProvider css = new CssProvider();
+            
+            Gtk.StyleContext.AddProviderForScreen(Gdk.Screen.Default, css, Gtk.StyleProviderPriority.User);
+            
+            string cssStyles = "";
+            
+            cssStyles = File.ReadAllText(pathToCss);
+            css.LoadFromData(cssStyles);
         }
     }
 }

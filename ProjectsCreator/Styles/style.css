@@ -1,0 +1,12 @@
+#green-widget{
+    background-color : #3D743A;
+    color : #D4D4D4;
+}
+
+#tree-view GtkRow:nth-child(even) {
+    background-color: #B2B2B2;
+}
+
+#tree-view GtkRow:nth-child(odd) {
+    background-color: #8C8C8C;
+}
