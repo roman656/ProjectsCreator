@@ -76,7 +76,10 @@ namespace ProjectsCreator
             var openMenuItem = new MenuItem("Открыть");
             var saveMenuItem = new MenuItem("Сохранить");
             var saveAsMenuItem = new MenuItem("Сохранить как");
-            
+            var apperanceMenuItem = new MenuItem("Вид");
+            var editMenuItem = new MenuItem("Правка");
+            var infoMenuItem = new MenuItem("Справка");
+
             openMenuItem.Activated += OnOpenMenuItemClick;
             
             fileMenu.Append(createMenuItem);
@@ -86,6 +89,9 @@ namespace ProjectsCreator
             fileMenuItem.Submenu = fileMenu;
             
             _menuBar.Append(fileMenuItem);
+            _menuBar.Append(apperanceMenuItem);
+            _menuBar.Append(editMenuItem);
+            _menuBar.Append(infoMenuItem);
         }
 
         private static TreeStore GetLeftTableModel()
