@@ -72,6 +72,7 @@ namespace ProjectsCreator
         {
             var fileMenuItem = new MenuItem("Файл");
             var fileMenu = new Menu();
+            var infoMenu = new Menu();
             var createMenuItem = new MenuItem("Создать");
             var openMenuItem = new MenuItem("Открыть");
             var saveMenuItem = new MenuItem("Сохранить");
@@ -79,7 +80,8 @@ namespace ProjectsCreator
             var apperanceMenuItem = new MenuItem("Вид");
             var editMenuItem = new MenuItem("Правка");
             var infoMenuItem = new MenuItem("Справка");
-
+            var agaInfoItem = new MenuItem("Думал, что тут спрака? Ага, поверил!");
+            
             openMenuItem.Activated += OnOpenMenuItemClick;
             
             fileMenu.Append(createMenuItem);
@@ -87,6 +89,9 @@ namespace ProjectsCreator
             fileMenu.Append(saveMenuItem);
             fileMenu.Append(saveAsMenuItem);
             fileMenuItem.Submenu = fileMenu;
+            
+            infoMenu.Append(agaInfoItem);
+            infoMenuItem.Submenu = infoMenu;
             
             _menuBar.Append(fileMenuItem);
             _menuBar.Append(apperanceMenuItem);
